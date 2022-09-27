@@ -40,11 +40,26 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // 'api' => [
+        //     'driver' => 'token',
+        //     'provider' => 'users',
+        //     'hash' => false,
+        // ],
         'api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'users',
-            'hash' => false,
         ],
+
+        'front' => [
+            'driver' => 'session',
+            'provider' => 'front',
+        ],
+
+        'company' => [
+            'driver' => 'session',
+            'provider' => 'company',
+        ],
+
     ],
 
     /*
@@ -68,6 +83,15 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'front' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Frontuser::class,
+        ],
+        'company' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Company::class,
         ],
 
         // 'users' => [

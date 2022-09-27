@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\CompanyController;
 use App\Http\Controllers\Api\Admin\ProjectController;
+use App\Http\Controllers\Api\Admin\TrackerInfoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,14 +17,28 @@ use App\Http\Controllers\Api\Admin\ProjectController;
 |
 */
 
-Route::post("/login",[UserController::class,'login']);
+// Route::prefix("tracker-info")->group(function(){
+//     Route::controller(TrackerInfoController::class)->group(function(){
+//     Route::post("/create","create");
+//     });
+// });
+Route::match(['get','post'],"/login",[UserController::class,'login']);
+// Route::match(['get','post'],"/tra/create",[UserController::class,'login']);
+// Route::group(['middleware'=>"cors"],function(){
+
+// });
+Route::get("/project/list",[ProjectController::class,'list']);
+Route::post("/project/create",[ProjectController::class,'create']);
 Route::post("/forget-password",[UserController::class,'forgetpassword']);
 Route::post("/change_password",[UserController::class,'change_password']);
+Route::post("/register",[UserController::class,'register']);
+Route::post("/company/register",[CompanyController::class,'create']);
 
 Route::middleware('auth:sanctum')->group(function(){
+    Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
     // Route::get("/user-list",)
     Route::post("/logout-user",[UserController::class,'logout']);
-
+//************************************************************************************************************** */
     //company page routing start
     Route::prefix("company")->group(function(){
     Route::controller(CompanyController::class)->group(function(){
@@ -32,17 +47,42 @@ Route::middleware('auth:sanctum')->group(function(){
         });
     });
     //end company page routing start
+//*************************************************************************************************************** */
 
 
 
+
+//************************************************************************************************************* */
     //project page routing start
     Route::prefix("project")->group(function(){
         Route::controller(ProjectController::class)->group(function(){
-        Route::post("/create",'create');
+        // Route::post("/create",'create');
+        // Route::get("/list","list");
 
             });
         });
         //end project page routing start
+//************************************************************************************************************** */
+
+
+
+
+
+
+//****************************************************************************************************************** */
+        //tracker info page routing
+        // Route::prefix("tracker-info")->group(function(){
+        //     Route::controller(TrackerInfoController::class)->group(function(){
+        //     Route::post("/create","create");
+        //     });
+        // });
+
+Route::match(['get','post'],"/tracker-info/create",[TrackerInfoController::class,'create']);
+Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::class,'getInfo']);
+Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
+Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
+        //end tracker info page routing
+//****************************************************************************************************** */
 
 
 

@@ -93,7 +93,7 @@ class CompanyController extends Controller
         return response()->json(
 
             [
-                'message'=>$e,
+                'message'=>$e->getMessage(),
                 "status"=>"error",
             ]
         );

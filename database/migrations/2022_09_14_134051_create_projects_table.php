@@ -24,6 +24,7 @@ class CreateProjectsTable extends Migration
             $table->boolean("delete")->default(false);
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

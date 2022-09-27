@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\{User,Company};
 use Validator;
 use Auth;
 use Hash;
@@ -13,12 +13,16 @@ use Hash;
 class UserController extends Controller
 {
 
+    function __construct(){
+        $this->middleware('auth:api', ['except' => ['login']]);
+    }
 
 
 
 
     public function login(Request $request)
     {
+
         $rule=[
             'email'=>"required",
             "password"=>"required",
@@ -45,7 +49,7 @@ class UserController extends Controller
 
                 if(Hash::check($request->password, $user->password)){
                     $token = $user->createToken("token");
-                    $user=User::where("email",$request->email)->with("company")->first();
+                    $user=User::where("email",$request->email)->first();
 
                     return ['token' => $token->plainTextToken,
                     "message"=>"success",
@@ -248,9 +252,81 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function register(Request $request)
+
     {
-        //
+        try{
+            $rule=array(
+                "name"=>"required",
+                "email"=>"required|email",
+                "company_id"=>"required",
+                "password"=>"required",
+                "username"=>"required",
+                "timezone"=>"required",
+            );
+
+            $message=array(
+                "name.required"=>"Name can`t be empty",
+                "email.required"=>"Email can`t be empty",
+                "email.email"=>"Email format is invalid",
+                "company_id.required"=>"Select Company Name",
+                "password.required"=>"Password can`t be empty",
+                "username.required"=>"Username can`t be empty",
+                "timezone.required"=>"Timezone can`t be empty",
+            );
+
+            $validate=Validator::make($request->all(),$rule,$message);
+            if($validate->fails()){
+                return response()->json([
+                    'message'=>$validate->errors()->first(),
+                    "status"=>"error",
+                    "error"=>$validate->errors()->all(),
+                ]);
+            }
+            else{
+                $check=User::where("email",$request->email)->exists();
+                if($check){
+                    return response()->josn([
+                        'message'=>"Email alredy exists",
+                        "status"=>"error",
+
+                    ],409);
+                }
+                else{
+                    $token=Hash::make(\Str::random(20));
+                    $request->request->add(['token'=>$token]);
+                    $request->request->add(['loginip',$request->ip()]);
+                    $request->request->add(['role'=>2]);
+                    $request->request->add(['password'=>Hash::make($request->password)]);
+                    $user=Users::create($request->all());
+                    if($user){
+                        $token = $user->createToken("token");
+                        return response()->json([
+                            'message'=>"Successfully register",
+                            "status"=>200,
+                            "user"=>$user,
+
+                        ],200);
+                    }
+                    else{
+                        return response()->json([
+                            'message'=>"Something is wrong try again",
+                            "status"=>"error",
+                        ],500);
+                    }
+                }
+            }
+
+        }
+        catch(\Exception $e){
+            return response()->json([
+                'message'=>$e->getMessage(),
+                "status"=>"error",
+            ],500);
+
+        }
+
+
     }
 
     /**

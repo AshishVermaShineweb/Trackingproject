@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Trackerinfo;
+use App\Models\Project;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable,HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +24,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        "username",
+        "token",
+        "role",
+        "company_id",
+        "timezone",
+        "loginip",
+        "active"
     ];
 
     /**
@@ -44,5 +54,13 @@ class User extends Authenticatable
 
     public function company(){
         return $this->belongsTo("App\Models\Company");
+    }
+
+    public function tracker_infos(){
+        return $this->hasOne(TrackerIno::class,"id","id");
+    }
+
+    public function project(){
+        return $this->hasOne(Project::class);
     }
 }

@@ -148,29 +148,23 @@
                              <span class="pcoded-mcaret"></span>
                          </a>
                          <ul class="pcoded-submenu">
+
                              <li class=" ">
-                                 <a href="{{ route('admin.company') }}">
-                                     <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                                     <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Company Details</span>
-                                     <span class="pcoded-mcaret"></span>
-                                 </a>
-                             </li>
-                             <li class=" ">
-                                 <a href="breadcrumb.html">
+                                 <a href="{{ url('company/project') }}">
                                      <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                                      <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Projects</span>
                                      <span class="pcoded-mcaret"></span>
                                  </a>
                              </li>
                              <li class=" ">
-                                 <a href="button.html">
+                                 <a href="{{ url('company/users') }}">
                                      <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                                      <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Users</span>
                                      <span class="pcoded-mcaret"></span>
                                  </a>
                              </li>
                              <li class=" ">
-                                 <a href="tabs.html">
+                                 <a href="{{ url('company/tracker-info') }}">
                                      <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                                      <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Tracker Info</span>
                                      <span class="pcoded-mcaret"></span>
