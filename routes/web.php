@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\Admin\ProjectController;
 use App\Http\Controllers\Backend\Admin\TrackerInfoController;
 use App\Http\Controllers\Backend\Admin\RoleController;
 use App\Http\Controllers\Backend\Admin\FrontUserController;
+use Artisan;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -125,3 +126,9 @@ Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::cla
 Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
 
 Route::match(['get','post'],"/tracker-info/getDataByWeekly",[TrackerInfoController::class,'getDataByWeekly']);
+
+
+//create migra
+Route::get("/migrate",function(){
+    Artisan::call('migrate');
+});
