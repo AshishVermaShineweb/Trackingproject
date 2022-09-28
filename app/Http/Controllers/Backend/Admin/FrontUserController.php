@@ -25,13 +25,7 @@ class FrontUserController extends Controller
 
 
     public function store(Request $request){
-            if(AUth::guard("company")->check()){
-                echo "login";
 
-            }else{
-                echo "not login";
-            }
-            die;
         $rule=array(
             "firstname"=>"required",
             "lastname"=>"required",
@@ -94,7 +88,7 @@ class FrontUserController extends Controller
                     }
                     else{
 
-                        $request->request->add(['token'=>\Str::random(30),"loginip"=>$request->ip(),"last_logindate"=>Carbon::now()->format('Y-m-d'),"timezone"=>"Asia\Culcata","company_id"=>47664]);
+                        $request->request->add(['token'=>\Str::random(30),"loginip"=>$request->ip(),"last_logindate"=>Carbon::today()->format('Y-m-d H:i:s'),"timezone"=>"Asia\Culcata","company_id"=>1]);
                           try{
                             if(FrontUser::create($request->all())){
                                 return response()->json([
@@ -134,6 +128,11 @@ class FrontUserController extends Controller
 
 
           }
+
+    }
+    public function get_list(){
+        $getData=FrontUser::all();
+        return response()->json($getData);
     }
 
 }

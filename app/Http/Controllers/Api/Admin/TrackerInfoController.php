@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Validator;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\Project;
 
 class TrackerInfoController extends Controller
 {
@@ -79,14 +80,18 @@ class TrackerInfoController extends Controller
 
 
 
-       $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->get();
-        //   echo $check;
-        //   die;
+       $check=TrackerInfo::where(function($query) use($request){
+            $query->where("user_id",$request->userId);
+            $query->where("project_id",$request->projectId);
+            $query->where("trackingDate",$request->trackingDate);
+       })->get();
+
+
              if(count($check) == 0){
 
              $info=new TrackerInfo();
-             $info->user_id=1;
-             $info->project_id=1;
+             $info->user_id=$request['userId'];
+             $info->project_id=$request['projectId'];
              $info->trackingHours=(int)$request->trackingHours;
              $info->trackingDate=$trackingDate;
              $info->tracking=json_encode([$request['tracking']]);
@@ -111,7 +116,7 @@ class TrackerInfoController extends Controller
           }
           else{
 
-            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$date)->first()->toArray();
+            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->first()->toArray();
 
 
               $trackingHour=(int)$check['trackingHours']+(int)$request['trackingHours'];
@@ -131,7 +136,7 @@ class TrackerInfoController extends Controller
 
 
 
-            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$date)->update(["trackingHours"=>$trackingHour,"tracking"=>json_encode($new_array)]);
+            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->update(["trackingHours"=>$trackingHour,"tracking"=>json_encode($new_array)]);
               if($check){
                 return response()->json(
                     [
@@ -220,21 +225,43 @@ class TrackerInfoController extends Controller
             $startDate=Carbon::today()->startOfWeek()->format("Y-m-d");
             $endDate=Carbon::today()->endOfWeek()->format("Y-m-d");
                 if(isset($request->projectId) && isset($request->trackingDate) && isset($request->userId)){
-                $data=TrackerInfo::where("project_id",$request->projectId)->where("user_id",$request->userId)->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
-                 if(!empty($data)){
-                    return response()->json([
-                        "message"=>"success",
-                        "code"=>200,
-                        "totalTrackigHours"=>$data,
-                    ],200);
-                 }
-                 else{
-                    return response()->json([
-                        "message"=>"Data not found",
-                        "code"=>404,
+                   $checkUserExist=User::where("id",$request->userId)->get()->count();
 
-                    ],404);
-                 }
+                   if($checkUserExist>0){
+                    $checkUserExist=Project::where("id",$request->projectId)->get()->count();
+                    if($checkUserExist>0){
+                        $data=TrackerInfo::where("project_id",$request->projectId)->where("user_id",$request->userId)->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
+                        if(!empty($data)){
+                           return response()->json([
+                               "message"=>"success",
+                               "code"=>200,
+                               "totalTrackigHours"=>$data,
+                           ],200);
+                        }
+                        else{
+                           return response()->json([
+                               "message"=>"Data not found",
+                               "code"=>404,
+
+                           ],404);
+                        }
+                    }
+                    else{
+                        return response()->json([
+                            "message"=>"Project id not exist",
+                            "code"=>404,
+                        ]);
+
+                    }
+
+
+                   }
+                   else{
+                    return response()->json([
+                        "message"=>"User id not exist",
+                        "code"=>404,
+                    ]);
+                   }
             }else{
                 return response()->json([
                     "message"=>"Project id ,User id and tracking date required",

@@ -10,6 +10,7 @@ Route::prefix("users")->group(function(){
     Route::get("delete/{id}","delete");
     Route::get("edit/{id}","edit");
     Route::match(['get','post'],"update","update");
+    Route::get("/list-data","get_list");
     });
     });
 

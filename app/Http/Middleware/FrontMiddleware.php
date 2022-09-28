@@ -23,4 +23,6 @@ class FrontMiddleware
             return redirect("/login");
         }
     }
+
+
 }

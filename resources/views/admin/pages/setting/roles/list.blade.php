@@ -93,17 +93,7 @@
     $(document).ready(function(){
 
         $('#get-role-list-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '/company/roles/list-data',
-            type: 'POST',
-        },
-        columns: [
-            { data: 'role' },
-            { data: 'action' },
-
-        ],
+    
     });
 
 

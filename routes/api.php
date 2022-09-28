@@ -16,7 +16,10 @@ use App\Http\Controllers\Api\Admin\TrackerInfoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::match(['get','post'],"/tracker-info/create",[TrackerInfoController::class,'create']);
+Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::class,'getInfo']);
+Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
+Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
 // Route::prefix("tracker-info")->group(function(){
 //     Route::controller(TrackerInfoController::class)->group(function(){
 //     Route::post("/create","create");
@@ -77,10 +80,7 @@ Route::middleware('auth:sanctum')->group(function(){
         //     });
         // });
 
-Route::match(['get','post'],"/tracker-info/create",[TrackerInfoController::class,'create']);
-Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::class,'getInfo']);
-Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
-Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
+
         //end tracker info page routing
 //****************************************************************************************************** */
 

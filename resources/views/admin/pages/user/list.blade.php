@@ -40,14 +40,14 @@
 
     </div>
     <div class="card-datatable table-responsive pt-0">
-      <table class="user-list-table table">
+      <table class="table" id="user-list-table">
         <thead class="table-light">
           <tr>
             <th></th>
             <th>Name</th>
             <th>Role</th>
             <th>Plan</th>
-            <th>Billing</th>
+            <th>Email</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -288,10 +288,7 @@
         });
             $('#modals-slide-in').on('hide.bs.modal', function (e) {
                 e.preventDefault();
-
-
-
-        });
+            });
         }
 
         hideModel();
@@ -306,6 +303,18 @@
         });
         });
 
+        function getUserList(){
+           $.ajax({
+            type:"GET",
+            url:"{{ url('/company/users/list-data') }}",
+            success:function(response){
+                console.log(response);
+            }
+           });
+
+        }
+        getUserList();
+
 $(".add-new-user").submit(function(e){
         e.preventDefault();
 
@@ -317,10 +326,16 @@ $(".add-new-user").submit(function(e){
             url:"{{ url('/company/users/create') }}",
             data:form,
             success:function(response){
-                console.log(response);
-                console.log(response);
+               if(response.message=="success"){
+                toastr['success']('User Resgiter Successfully', {
+              closeButton: true,
+               tapToDismiss: false,
+              progressBar: true,
 
+    });
 
+    $(".add-new-user").trigger("reset");
+               }
             },
             error:function(err){
                 if (err.status == 422 || err.status==500) {
