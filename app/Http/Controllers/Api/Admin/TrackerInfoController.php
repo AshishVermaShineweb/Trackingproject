@@ -10,6 +10,8 @@ use Validator;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\TrackerInfoData;
+use DB;
 
 class TrackerInfoController extends Controller
 {
@@ -132,7 +134,8 @@ class TrackerInfoController extends Controller
           }
           else{
 
-            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->first()->toArray();
+            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])
+            ->where('trackingDate',$trackingDate)->first()->toArray();
 
 
               $trackingHour=(int)$check['trackingHours']+(int)$request['trackingHours'];
@@ -149,12 +152,36 @@ class TrackerInfoController extends Controller
 
                  array_push($new_array,$request['tracking']);
             }
+            $checkUpdate="";
+            $checkInsert="";
+            DB::beginTransaction();
+
+            try {
+                $checkUpdate=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])
+                ->where('trackingDate',$trackingDate)
+                ->update(["trackingHours"=>$trackingHour]);
+
+               $checkInsert= TrackerInfoData::create([
+                    "tracker_id"=>$check['id'],
+                    "tracking_date"=>$trackingDate,
+                    "tracking_data"=>json_encode($request->tracking),
+                    "hours"=>$request->trackingHours,
+
+                ]);
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollback();
+            }
 
 
 
-            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->update(["trackingHours"=>$trackingHour,"tracking"=>json_encode($new_array)]);
+
+
+
                 try{
-                    if($check){
+
+                    if($checkUpdate && $checkInsert){
                         return response()->json(
                             [
                                 "message"=>"success",
