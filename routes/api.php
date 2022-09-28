@@ -16,10 +16,7 @@ use App\Http\Controllers\Api\Admin\TrackerInfoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::match(['get','post'],"/tracker-info/create",[TrackerInfoController::class,'create']);
-Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::class,'getInfo']);
-Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
-Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
+
 // Route::prefix("tracker-info")->group(function(){
 //     Route::controller(TrackerInfoController::class)->group(function(){
 //     Route::post("/create","create");
@@ -37,7 +34,7 @@ Route::post("/change_password",[UserController::class,'change_password']);
 Route::post("/register",[UserController::class,'register']);
 Route::post("/company/register",[CompanyController::class,'create']);
 
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware(['auth:sanctum','cors'])->group(function(){
     Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
     // Route::get("/user-list",)
     Route::post("/logout-user",[UserController::class,'logout']);
@@ -74,11 +71,12 @@ Route::middleware('auth:sanctum')->group(function(){
 
 //****************************************************************************************************************** */
         //tracker info page routing
-        // Route::prefix("tracker-info")->group(function(){
-        //     Route::controller(TrackerInfoController::class)->group(function(){
-        //     Route::post("/create","create");
-        //     });
-        // });
+
+
+ Route::match(['get','post'],"/tracker-info/create",[TrackerInfoController::class,'create']);
+Route::match(['get','post'],"/tracker-info/get-info",[TrackerInfoController::class,'getInfo']);
+Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'list']);
+Route::match(['get','post'],"/tracker-info/getTrackingHour",[TrackerInfoController::class,'getTrackingHour']);
 
 
         //end tracker info page routing

@@ -79,39 +79,39 @@
             };
 
 
-        // $.ajax({
-        //     type:"POST",
-        //     url:"{{ url('/tracker-info/create') }}",
-        //     data:{
-                // userId:userId,
-                // projectId:projectId,
-                // date:date,
-                // trackingDate:trackingDate,
-                // trackingHours:trackingHour,
-                // tracking:tracking,
-                // timezone:"shfhvdfg",
-                // hourLimit:50,
-        //         _token:"{{ csrf_token() }}",
-        //     },
-        //     success:function(response){
-        //         console.log(response);
-        //     }
-        // });
-
-
         $.ajax({
-            type:"GET",
-            url:"{{ url('/tracker-info/getDataByWeekly') }}",
+            type:"POST",
+            url:"{{ url('/tracker-info/create') }}",
             data:{
-                userId:1,
-                projectId:1,
-
+                userId:userId,
+                projectId:projectId,
+                date:date,
+                trackingDate:trackingDate,
+                trackingHours:trackingHour,
+                tracking:tracking,
+                timezone:"shfhvdfg",
+                hourLimit:50,
                 _token:"{{ csrf_token() }}",
             },
             success:function(response){
                 console.log(response);
             }
         });
+
+
+        // $.ajax({
+        //     type:"GET",
+        //     url:"{{ url('/tracker-info/getDataByWeekly') }}",
+        //     data:{
+        //         userId:1,
+        //         projectId:1,
+
+        //         _token:"{{ csrf_token() }}",
+        //     },
+        //     success:function(response){
+        //         console.log(response);
+        //     }
+        // });
 
 
 

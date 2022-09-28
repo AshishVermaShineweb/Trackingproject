@@ -78,15 +78,31 @@ class TrackerInfoController extends Controller
 
        $trackingDate=$request['trackingDate'];
 
+       //check user id and project id valid or not
+       $check=User::where("id",$request->userId)->get()->count();
+       if($check>0){
+        $check=Project::where("id",$request->projectId)->get()->count();
+        if($check>0){
 
 
-       $check=TrackerInfo::where(function($query) use($request){
-            $query->where("user_id",$request->userId);
-            $query->where("project_id",$request->projectId);
-            $query->where("trackingDate",$request->trackingDate);
-       })->get();
+        }else{
+            return response()->json([
+                "message"=>"Project id not exist",
+                "code"=>404,
 
+            ],404);
+        }
 
+       }else{
+        return response()->json([
+            "message"=>"User id not exist",
+            "cde"=>404,
+        ],404);
+       }
+
+       $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->get();
+        //   echo $check;
+        //   die;
              if(count($check) == 0){
 
              $info=new TrackerInfo();
@@ -137,20 +153,29 @@ class TrackerInfoController extends Controller
 
 
             $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->update(["trackingHours"=>$trackingHour,"tracking"=>json_encode($new_array)]);
-              if($check){
-                return response()->json(
-                    [
-                        "message"=>"success",
-                        "code"=>200,
-                    ],200
-                );
-              }
-              else{
-                return response()->json([
-                    "message"=>"failed",
-                    "code"=>500,
-                ],500);
-              }
+                try{
+                    if($check){
+                        return response()->json(
+                            [
+                                "message"=>"success",
+                                "code"=>200,
+                            ],200
+                        );
+                      }
+                      else{
+                        return response()->json([
+                            "message"=>"failed",
+                            "code"=>500,
+                        ],500);
+                      }
+
+                }catch(\Exception $e){
+                    return response()->json([
+                        "message"=>$e->getMessage(),
+                        "code"=>500,
+                    ],500);
+
+                }
 
           }
 
@@ -171,8 +196,35 @@ class TrackerInfoController extends Controller
 
     public function getInfo(Request $request){
 
+
+
           try{
             if(isset($request->userId) && isset($request->projectId)){
+                //--------- check user ---------------------//
+                $check=User::where("id",$request->userId)->exists();
+                if($check){
+
+
+                }
+                else{
+                    return response()->json([
+                        "message"=>"User id not exists",
+                        "code"=>404,
+                    ],404);
+                }
+                //--------- end check user -----------------//
+
+                //-------- check project ------------------//
+                $check=Project::where("id",$request->projectId)->exists();
+                    if($check){
+
+                    }else{
+                        return response()->json([
+                            "message"=>"Project id not exists",
+                            "code"=>404,
+                        ],404);
+                    }
+                //--------- end check project ------------//
                 $data=Company::join("users",function($join) use($request){
                     $join->on("users.company_id","=","companies.id")
                          ->where("users.id",$request->userId);
@@ -225,43 +277,21 @@ class TrackerInfoController extends Controller
             $startDate=Carbon::today()->startOfWeek()->format("Y-m-d");
             $endDate=Carbon::today()->endOfWeek()->format("Y-m-d");
                 if(isset($request->projectId) && isset($request->trackingDate) && isset($request->userId)){
-                   $checkUserExist=User::where("id",$request->userId)->get()->count();
-
-                   if($checkUserExist>0){
-                    $checkUserExist=Project::where("id",$request->projectId)->get()->count();
-                    if($checkUserExist>0){
-                        $data=TrackerInfo::where("project_id",$request->projectId)->where("user_id",$request->userId)->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
-                        if(!empty($data)){
-                           return response()->json([
-                               "message"=>"success",
-                               "code"=>200,
-                               "totalTrackigHours"=>$data,
-                           ],200);
-                        }
-                        else{
-                           return response()->json([
-                               "message"=>"Data not found",
-                               "code"=>404,
-
-                           ],404);
-                        }
-                    }
-                    else{
-                        return response()->json([
-                            "message"=>"Project id not exist",
-                            "code"=>404,
-                        ]);
-
-                    }
-
-
-                   }
-                   else{
+                $data=TrackerInfo::where("project_id",$request->projectId)->where("user_id",$request->userId)->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
+                 if(!empty($data)){
                     return response()->json([
-                        "message"=>"User id not exist",
+                        "message"=>"success",
+                        "code"=>200,
+                        "totalTrackigHours"=>$data,
+                    ],200);
+                 }
+                 else{
+                    return response()->json([
+                        "message"=>"Data not found",
                         "code"=>404,
-                    ]);
-                   }
+
+                    ],404);
+                 }
             }else{
                 return response()->json([
                     "message"=>"Project id ,User id and tracking date required",

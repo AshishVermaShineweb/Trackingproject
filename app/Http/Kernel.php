@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         "checkadmin"=>\App\Http\Middleware\checkAdminSession::class,
         "frontuser"=>\App\Http\Middleware\FrontMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        'cors' => \App\Http\Middleware\Cors::class,
     ];
 }

@@ -10,6 +10,7 @@ use Hash;
 use App\Models\Project;
 use Carbon\Carbon;
 use App\Models\TrackerInfo;
+use App\Models\User;
 
 class ProjectController extends Controller
 {
@@ -46,7 +47,7 @@ class ProjectController extends Controller
              }
              else{
 
-                $request->request->add(['company_id'=>1]);
+                $request->request->add(['company_id'=>Auth::user()->id]);
 
 
 
@@ -93,64 +94,63 @@ class ProjectController extends Controller
         }
     }
 
-
     public function list(Request $request){
 
-          try{
 
-                    //start check
-        $allData=array();
-        $startDate=Carbon::today()->startOfWeek()->format("Y-m-d");
-        $endDate=Carbon::today()->endOfWeek()->format("Y-m-d");
-        $allProject=Project::where("user_id",$request->userId)->get()->toArray();
-          foreach($allProject as $project){
-            $trackingData=TrackerInfo::where("user_id",$request->userId)->where("project_id",$project['id'])->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
-            if(($trackingData)>0){
-                $data=[
-                    "name"=>$project['name'],
-                    "description"=>$project['description'],
-                    "hourLimit"=>$project['hourLimit'],
-                    "trackingHours"=>$trackingData,
+        try{
 
-
-                ];
-                array_push($allData,$data);
-            }
-            else{
-                $data=[
-                    "name"=>$project['name'],
-                    "description"=>$project['description'],
-                    "hourLimit"=>$project['hourLimit'],
-                    "trackingHours"=>0,
+            //start check
+$allData=array();
+$startDate=Carbon::today()->startOfWeek()->format("Y-m-d");
+$endDate=Carbon::today()->endOfWeek()->format("Y-m-d");
+$allProject=Project::where("user_id",$request->userId)->get()->toArray();
+  foreach($allProject as $project){
+    $trackingData=TrackerInfo::where("user_id",$request->userId)->where("project_id",$project['id'])->whereBetween("trackingDate",[$startDate,$endDate])->sum("trackingHours");
+    if(($trackingData)>0){
+        $data=[
+            "name"=>$project['name'],
+            "description"=>$project['description'],
+            "hourLimit"=>$project['hourLimit'],
+            "trackingHours"=>$trackingData,
+            "project_id"=>$project['id'],
 
 
-                ];
-                array_push($allData,$data);
-
-            }
-
-
-          }
-          return response()->json([
-            "message"=>"success",
-            "data"=>$allData,
-            "code"=>200,
-          ],200);
-
-          }
-          catch(\Exception $e){
-            return response()->json([
-                "message"=>"error",
-                "code"=>500,
-            ],500);
-
-          }
+        ];
+        array_push($allData,$data);
+    }
+    else{
+        $data=[
+            "name"=>$project['name'],
+            "description"=>$project['description'],
+            "hourLimit"=>$project['hourLimit'],
+            "trackingHours"=>0,
+            "project_id"=>$project['id'],
 
 
-        //end check
-    //      try{
+        ];
+        array_push($allData,$data);
+
+    }
+
+
+  }
+  return response()->json([
+    "message"=>"success",
+    "data"=>$allData,
+    "code"=>200,
+  ],200);
+
+  }
+  catch(\Exception $e){
+    return response()->json([
+        "message"=>$e->getMessage(),
+        "code"=>500,
+    ],500);
+
+  }
+    //     try{
     //         if(isset($request->userId)){
-    //             $check=Project::where("user_id",$request->userId)->get();
+    //             $check=Project::where("user_id",$request->userId)->select(['name',"hourLimit","description","id as project_id"])->get();
     //             if(count($check)>0){
     //                 $startDate=Carbon::today()->startOfWeek()->format("Y-m-d");
     //                 $endDate=Carbon::today()->endOfWeek()->format("Y-m-d");
@@ -183,6 +183,7 @@ class ProjectController extends Controller
     //                    return response()->json(
     //                        [
     //                            'totalTrackingHours'=>0,
+    //                            "data"=>$check,
 
     //                            "code"=>200,
     //                        ],200
