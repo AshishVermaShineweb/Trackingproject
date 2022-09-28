@@ -131,4 +131,5 @@ Route::match(['get','post'],"/tracker-info/getDataByWeekly",[TrackerInfoControll
 //create migra
 Route::get("/migrate",function(){
     Artisan::call('migrate');
+    return "Data Migrated";
 });
