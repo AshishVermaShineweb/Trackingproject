@@ -20,9 +20,9 @@ use Artisan;
 |
 */
 
-Route::get("/demo",function(){
-return view("demo");
-});
+// Route::get("/demo",function(){
+// return view("demo");
+// });
 
 Route::get('/', function () {
     return view('welcome');
