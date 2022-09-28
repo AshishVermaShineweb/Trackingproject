@@ -175,10 +175,6 @@ class TrackerInfoController extends Controller
             }
 
 
-
-
-
-
                 try{
 
                     if($checkUpdate && $checkInsert){
