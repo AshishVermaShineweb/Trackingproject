@@ -20,31 +20,11 @@
 
             var userId=1;
             var projectId=1;
-            var date=new Date().toLocaleDateString();
-            var trackingDate=1663901994;
-            var trackingHour=10;
+            var date="2022-09-28";
+            var trackingDate="2022-09-28";
+            var trackingHour=1;
             var tracking=[
-                {
-      "image": "https://tracker-app.s3.ap-southeast-1.amazonaws.com/Screenshot/bkggjalo2yc95h2lmiug6f",
-      "keyCounters": [
 
-
-
-
-
-        {
-          "hjdvhvh kumar maurya":true,
-          "shiftKey": false,
-          "altKey": false,
-          "ctrlKey": false,
-          "metaKey": false,
-          "keycode": 14,
-          "rawcode": 8,
-          "type": "keyup",
-          "hitCount": 1
-        }
-      ]
-    },
     {
       "image": "https://tracker-app.s3.ap-southeast-1.amazonaws.com/Screenshot/w6pz3jki697lrpyrh0ck3m",
       "keyCounters": [
@@ -60,11 +40,8 @@
           "hitCount": 1
         }
       ]
-    },
-    {
-      "image": "https://tracker-app.s3.ap-southeast-1.amazonaws.com/Screenshot/fyljuqzrmk8f1ui5wih1pf",
-      "keyCounters": []
     }
+
             ];
 
 
@@ -90,7 +67,7 @@
                 trackingHours:trackingHour,
                 tracking:tracking,
                 timezone:"shfhvdfg",
-                hourLimit:50,
+                hourLimit:40,
                 _token:"{{ csrf_token() }}",
             },
             success:function(response){

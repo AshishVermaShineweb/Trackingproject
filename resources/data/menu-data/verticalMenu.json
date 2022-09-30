@@ -1048,6 +1048,19 @@
         "icon": "circle",
         "slug": "raise-support",
         "newTab": true
-      }
+      },
+      {"name": "Tracker",
+      "icon": "user",
+      "slug": "",
+      "submenu": [
+        {
+          "name": "Users",
+          "icon": "circle",
+          "slug": "menu-level",
+          "url":"/company/tracker/user"
+        }
+
+      ]
+    }
   ]
 }

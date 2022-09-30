@@ -10,39 +10,36 @@ use Validator;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Project;
-use App\Models\TrackerInfoData;
-use DB;
 
 class TrackerInfoController extends Controller
 {
-    // public function list(Request $request){
-    //      $date=date("Y-m-d",$request->trackingDate);
-    //     $data=TrackerInfo::where("trackingDate",$date)->first();
+    public function list(Request $request){
+         $date=date("Y-m-d",$request->trackingDate);
+        $data=TrackerInfo::where("trackingDate",$date)->first();
 
-    //     if($data){
-    //         $data['tracking']=json_decode($data['tracking'],true);
-    //         return response()->json(
-    //             [
-    //                 "message"=>"success",
-    //                 "code"=>200,
-    //                 "data"=>$data,
-    //             ],200
-    //         );
-    //     }
-    //     else{
-    //         return response()->json([
-    //             "message"=>"data not found",
-    //             "code"=>404,
+        if($data){
+            $data['tracking']=json_decode($data['tracking'],true);
+            return response()->json(
+                [
+                    "message"=>"success",
+                    "code"=>200,
+                    "data"=>$data,
+                ],200
+            );
+        }
+        else{
+            return response()->json([
+                "message"=>"data not found",
+                "code"=>404,
 
-    //         ],404);
-    //     }
-
-
+            ],404);
+        }
 
 
 
-    // }
 
+
+    }
     public function create(Request $request){
 
        $rule=array(
@@ -86,7 +83,7 @@ class TrackerInfoController extends Controller
        if($check>0){
         $check=Project::where("id",$request->projectId)->get()->count();
         if($check>0){
-
+            
 
         }else{
             return response()->json([
@@ -107,55 +104,35 @@ class TrackerInfoController extends Controller
         //   echo $check;
         //   die;
              if(count($check) == 0){
-                DB::beginTransaction();
-                try{
-                    $info=new TrackerInfo();
-                    $info->user_id=$request['userId'];
-                    $info->project_id=$request['projectId'];
-                    $info->trackingHours=(int)$request->trackingHours;
-                    $info->trackingDate=$trackingDate;
-                    $info->timezone="ffgvhfvf";
-                    $info->hourLimit=40;
-       
-       
-                    if($info->save()){
-                       TrackerInfoData::create([
-                           "tracker_id"=>$info->id,
-                           "tracking_date"=>$trackingDate,
-                           "tracking_data"=>json_encode($request->tracking),
-                           "hours"=>$request->trackingHours,
-       
-                       ]);
-                       return response()->json([
-                           "message"=>"success",
-                           "code"=>200,
-                       ],200);
-                    }
-                    else{
-                       return response()->json([
-                           "message"=>"something is wrong",
-                           "code"=>422,
-                       ],422);
-                    }
-                    DB::commit();
 
-                }
-                catch(\Exception $e){
-                    DB::rollback();
-                    return response()->json([
-                        "message"=>$e->getMessage(),
-                        "code"=>500,
-                    ],500);
-                }
+             $info=new TrackerInfo();
+             $info->user_id=$request['userId'];
+             $info->project_id=$request['projectId'];
+             $info->trackingHours=(int)$request->trackingHours;
+             $info->trackingDate=$trackingDate;
+             $info->tracking=json_encode([$request['tracking']]);
+             $info->timezone="ffgvhfvf";
+             $info->hourLimit=40;
 
-          
+
+             if($info->save()){
+                return response()->json([
+                    "message"=>"success",
+                    "code"=>200,
+                ],200);
+             }
+             else{
+                return response()->json([
+                    "message"=>"something is wrong",
+                    "code"=>422,
+                ],422);
+             }
 
 
           }
           else{
 
-            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])
-            ->where('trackingDate',$trackingDate)->first()->toArray();
+            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->first()->toArray();
 
 
               $trackingHour=(int)$check['trackingHours']+(int)$request['trackingHours'];
@@ -163,43 +140,21 @@ class TrackerInfoController extends Controller
               $new_array = [];
 
 
-            // $tracking_data = json_decode($check['tracking'],true);
+            $tracking_data = json_decode($check['tracking'],true);
 
 
-            // foreach($tracking_data as $key=>$value)
-            // {
-            //     $new_array[] = $value;
+            foreach($tracking_data as $key=>$value)
+            {
+                $new_array[] = $value;
 
-            //      array_push($new_array,$request['tracking']);
-            // }
-            $checkUpdate="";
-            $checkInsert="";
-            DB::beginTransaction();
-
-            try {
-                $checkUpdate=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])
-                ->where('trackingDate',$trackingDate)
-                ->update(["trackingHours"=>$trackingHour]);
-
-               $checkInsert= TrackerInfoData::create([
-                    "tracker_id"=>$check['id'],
-                    "tracking_date"=>$trackingDate,
-                    "tracking_data"=>json_encode($request->tracking),
-                    "hours"=>$request->trackingHours,
-
-                ]);
-                DB::commit();
-
-            } catch (\Exception $e) {
-                DB::rollback();
+                 array_push($new_array,$request['tracking']);
             }
 
 
 
-
+            $check=TrackerInfo::where(['user_id'=>$request['userId'],"project_id"=>$request['projectId']])->where('trackingDate',$trackingDate)->update(["trackingHours"=>$trackingHour,"tracking"=>json_encode($new_array)]);
                 try{
-
-                    if($checkUpdate && $checkInsert){
+                    if($check){
                         return response()->json(
                             [
                                 "message"=>"success",
@@ -241,14 +196,14 @@ class TrackerInfoController extends Controller
 
     public function getInfo(Request $request){
 
-
+        
 
           try{
             if(isset($request->userId) && isset($request->projectId)){
                 //--------- check user ---------------------//
                 $check=User::where("id",$request->userId)->exists();
                 if($check){
-
+                    
 
                 }
                 else{
@@ -262,7 +217,7 @@ class TrackerInfoController extends Controller
                 //-------- check project ------------------//
                 $check=Project::where("id",$request->projectId)->exists();
                     if($check){
-
+                        
                     }else{
                         return response()->json([
                             "message"=>"Project id not exists",

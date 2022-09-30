@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
-        public function list(){
-            // $data=User::select("name","email","timezone","loginip","active","username","id")->get();
+        public function userList(){
+            $data=User::select("name","email","timezone","id")->get();
 
-            return view("admin.pages.user.list");
+            return view("admin.pages.tracker.list",['data'=>$data]);
         }
 
 

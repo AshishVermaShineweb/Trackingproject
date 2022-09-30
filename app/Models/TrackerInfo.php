@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Project;
+use App\Models\TrackerInfoData;
 
 class TrackerInfo extends Model
 {
@@ -19,4 +20,10 @@ class TrackerInfo extends Model
     public function projects(){
         return $this->belongsTo(Project::class);
     }
+
+    public function tracker_info_data(){
+        return $this->belongsTo(TrackerInfoData::class);
+    }
+
+    
 }

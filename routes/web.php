@@ -8,7 +8,7 @@ use App\Http\Controllers\Backend\Admin\ProjectController;
 use App\Http\Controllers\Backend\Admin\TrackerInfoController;
 use App\Http\Controllers\Backend\Admin\RoleController;
 use App\Http\Controllers\Backend\Admin\FrontUserController;
-use Artisan;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -128,8 +128,18 @@ Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'
 Route::match(['get','post'],"/tracker-info/getDataByWeekly",[TrackerInfoController::class,'getDataByWeekly']);
 
 
-//create migra
-Route::get("/migrate",function(){
-    Artisan::call('migrate');
-    return "Data Migrated";
-});
+Route::get("/company/tracker/user",[UserController::class,'userList']);
+Route::get("/company/tracker/user/project/{id}",[ProjectController::class,'getProjectListAssignedUser']);
+Route::get("/company/tracker/user/trackerInfo",[TrackerInfoController::class,'getUserAssignProjectTrackingData']);
+Route::get("/company/tracker/user/trackerInfoByDate",[TrackerInfoController::class,"getTrackerInfoByDate"]);
+Route::get("/company/tracker/user/getTrackingListById",[TrackerInfoController::class,"getTrackingListById"]);
+
+//create migrate
+// Route::get("/migrate",function(){
+//     Artisan::call('migrate');
+
+// });
+
+
+
+Route::get("/demo",[TrackerInfoController::class,'create']);

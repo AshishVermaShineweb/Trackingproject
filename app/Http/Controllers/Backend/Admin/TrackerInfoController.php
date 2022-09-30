@@ -5,8 +5,14 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TrackerInfo;
+use App\Models\TrackerInfoData;
+use App\Models\User;
+use App\Models\Project;
 use Carbon\Carbon;
 use Validator;
+use DB;
+use Session;
+
 
 class TrackerInfoController extends Controller
 {
@@ -234,6 +240,111 @@ class TrackerInfoController extends Controller
          }
 
 
+
+    }
+
+
+    public function getUserAssignProjectTrackingData(Request $request){
+
+       if($request->get("user_id")!=null && $request->get("project_id")!=null){
+              try{
+
+                $startOfWeek=Carbon::today()->startOfWeek()->format("Y-m-d");
+                $endOfWeek=Carbon::today()->endOfWeek()->format("Y-m-d");
+                $username=User::where("id",$request->get("user_id"))->select("name","id")->first();
+                $projectname=Project::where("id",$request->get("project_id"))->select("name","id")->first();
+                //set username and project project name is session so that we can use this at multiple place
+                Session::put("username",$username['name']);
+                Session::put("projectname",$projectname['name']);
+                //end set username and project name in session
+                $start_date_array = [];
+                $end_date_array = [];
+                $data=TrackerInfo::where("user_id",$request->get("user_id"))->where("project_id",$request->get("project_id"))
+                  ->select("trackingDate")
+                  ->get()->toArray();
+                  foreach($data as $list){
+                    $start_date = Carbon::parse($list['trackingDate'])->startOfWeek()->format("d/m/Y");
+                    $end_date = Carbon::parse($list['trackingDate'])->endOfWeek()->format("d/m/Y");
+
+                    if(!in_array($start_date,$start_date_array))
+                    {
+                        $start_date_array[] = $start_date;
+                        $end_date_array[] = $end_date;
+                    }
+                  }
+
+                  return view("admin.pages.tracker.trackerInfoList",['start_date'=>$start_date_array,"end_date"=>$end_date_array,"username"=>$username,"projectname"=>$projectname]);
+
+              }
+              catch(\Exception $e){
+                 return redirect()->back()->with("Something is wrong");
+              }
+
+       }
+       else{
+        return redirect()->back();
+       }
+
+    }
+
+
+    public function getTrackerInfoByDate(Request $request){
+        if($request->get("s_d")!=null && $request->get("e_d")!=null && $request->get("p_")!=null && $request->get("u_")){
+            $start_date=base64_decode($request->get("s_d"));
+            $end_date=base64_decode($request->get("e_d"));
+            $start_date=Carbon::createFromFormat('d/m/Y', $start_date)->format('Y-m-d');
+            $end_date=Carbon::createFromFormat('d/m/Y', $end_date)->format('Y-m-d');
+            $user_id=base64_decode($request->get("u_"));
+            $project_id=base64_decode($request->get("p_"));
+             try{
+                $data=TrackerInfo::join("tracker_info_data",function($join)use($start_date,$end_date){
+                    $join->on("tracker_info_data.tracker_id","=","tracker_infos.id");
+
+                  })->where(["user_id"=>$user_id,"project_id"=>$project_id])
+                ->whereBetween("trackingDate",[$start_date,$end_date])
+                ->groupBy(\DB::raw("date(tracker_infos.trackingDate)"))
+                ->select("tracker_infos.trackingDate","tracker_infos.id as tracker_id","tracker_infos.hourLimit")
+                ->get()->toArray();
+                $totalTrackingHours=TrackerInfo::where(["user_id"=>$user_id,"project_id"=>$project_id])->whereBetween("trackingDate",[$start_date,$end_date])->sum("trackingHours");
+
+                  return view("admin.pages.tracker.tracking_data_list",['data'=>$data,'totalHour'=>$totalTrackingHours]);
+
+            }catch(\Exception $e){
+
+                return redirect()->back()->with(["message"=>$e->getMessage()]);
+            }
+        }else{
+            return redirect()->back()->with(['message'=>"Something is missing try again"]);
+
+        }
+
+    }
+
+
+    public function getTrackingListById(Request $request){
+        $tracker_id=$request->get("tracker_id");
+        $data=TrackerInfoData::where("tracker_id",$tracker_id)->get();
+        $data=$data->map(function($data){
+            return array(
+                "tracking_data"=>json_decode(json_decode($data->tracking_data,true),true),
+                "tracker_id"=>$data->tracker_id,
+                "id"=>$data->id,
+                "created_at"=>$data->created_at,
+            );
+        });
+        if(!empty($data)){
+            return response()->json([
+                "message"=>"success",
+                "code"=>200,
+                "data"=>$data,
+            ],200);
+        }else{
+            return response()->json([
+                "message"=>"data not found",
+                "code"=>404,
+
+            ],404);
+        }
 
     }
 

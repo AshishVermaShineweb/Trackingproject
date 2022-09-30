@@ -155,4 +155,16 @@ public function update(Request $request){
 
 }
 
+
+
+  //get project listing on behalf is user assigned project
+  public function getProjectListAssignedUser(Request $request,$id=null){
+       if(isset($id)){
+        $allProject=Project::where("user_id",$id)->get();
+        return view("admin.pages.tracker.assignedProject",['data'=>$allProject]);
+
+       }
+
+  }
+
 }

@@ -24,6 +24,7 @@
       <link rel="stylesheet" type="text/css" href="{{ url('assets/css/style.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ url('assets/css/ripple-effect.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ url('assets/css/jquery.mCustomScrollbar.css') }}">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
       @yield('css')
       @yield('link')
       <style>
@@ -191,6 +192,7 @@ z-index: 999999999;;
 });
     });
 </script>
+@yield("custom-js")
 </body>
 
 </html>
