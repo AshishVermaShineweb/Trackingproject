@@ -8,6 +8,8 @@ use App\Http\Controllers\Backend\Admin\ProjectController;
 use App\Http\Controllers\Backend\Admin\TrackerInfoController;
 use App\Http\Controllers\Backend\Admin\RoleController;
 use App\Http\Controllers\Backend\Admin\FrontUserController;
+use App\Http\Controllers\Backend\Admin\PermissionController;
+use App\Models\TrackerInfoData;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,3 +145,30 @@ Route::get("/company/tracker/user/getTrackingListById",[TrackerInfoController::c
 
 
 Route::get("/demo",[TrackerInfoController::class,'create']);
+Route::get("/check",function(){
+    echo "<pre>";
+         $data=TrackerInfoData::cursor()->remember();
+         $data=$data->toArray();
+
+         dd($data);
+    echo "</pre>";
+
+});
+
+
+Route::get("/permission",[PermissionController::class,'create']);
+//-------------------- ROLE ROUTINGS STARTS ----------------------------------------------------//
+Route::post("/company/roles/add",[RoleController::class,"add"]);
+Route::get("/company/roles/list",[RoleController::class,"listdata"]);
+Route::get("/company/roles/delete",[RoleController::class,"delete"]);
+Route::post("/company/roles/update",[RoleController::class,"update"]);
+//--------------------END ROLE ROUTING ----------------------------------------------------------//
+
+//------------------------------ PERMISSION ROUTING START ---------------------------------------//
+Route::get("/company/permission",[PermissionController::class,"list"]);
+Route::post("/company/permission/add",[PermissionController::class,"add"]);
+Route::get("/company/permission/list",[PermissionController::class,"listdata"]);
+Route::get("/company/permission/delete",[PermissionController::class,"delete"]);
+Route::post("/company/permission/update",[PermissionController::class,"update"]);
+//------------------------------ PERMISSION ROTUNG END -----------------------------------------//
+
