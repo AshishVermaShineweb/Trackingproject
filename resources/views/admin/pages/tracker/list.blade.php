@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
   <link rel="stylesheet" href="{{asset('vendors/css/forms/select/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/extensions/toastr.min.css')) }}">
+
 @endsection
 
 @section('page-style')
@@ -40,13 +41,13 @@
 
     </div>
     <div class="card-datatable table-responsive pt-0">
-      <table class="table" id="user-list-table">
+      <table class="table text-center" id="user-list-table">
         <thead class="table-light">
           <tr>
             <th>Sr.No</th>
             <th>Name</th>
 
-            <th>Email</th>
+
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -56,7 +57,8 @@
             <tr>
                 <td>{{ $key+1 }}</td>
                 <td>{{ $list->name }}</td>
-                <td>{{ $list->email }}</td>
+
+
                 <td>
                     @if ($list->status==1)
                     <span class="badge rounded-pill badge-light-success" text-capitalized="">Active</span>

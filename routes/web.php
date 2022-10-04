@@ -130,12 +130,12 @@ Route::match(['get','post'],"/tracker-info/list",[TrackerInfoController::class,'
 Route::match(['get','post'],"/tracker-info/getDataByWeekly",[TrackerInfoController::class,'getDataByWeekly']);
 
 
-Route::get("/company/tracker/user",[UserController::class,'userList']);
+Route::get("/company/tracker/user",[TrackerInfoController::class,'userList']);
 Route::get("/company/tracker/user/project/{id}",[ProjectController::class,'getProjectListAssignedUser']);
 Route::get("/company/tracker/user/trackerInfo",[TrackerInfoController::class,'getUserAssignProjectTrackingData']);
 Route::get("/company/tracker/user/trackerInfoByDate",[TrackerInfoController::class,"getTrackerInfoByDate"]);
 Route::get("/company/tracker/user/getTrackingListById",[TrackerInfoController::class,"getTrackingListById"]);
-
+Route::get("/company/tracker/user/getTrackerInfoBySpecificDate",[TrackerInfoController::class,'getTrackerInfoBySepcificDate']);
 //create migrate
 // Route::get("/migrate",function(){
 //     Artisan::call('migrate');

@@ -8,6 +8,8 @@ use App\Models\Project;
 use App\Models\User;
 use Validator;
 use Auth;
+use App\Models\TrackerInfo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 
 class ProjectController extends Controller
@@ -160,7 +162,22 @@ public function update(Request $request){
   //get project listing on behalf is user assigned project
   public function getProjectListAssignedUser(Request $request,$id=null){
        if(isset($id)){
-        $allProject=Project::where("user_id",$id)->get();
+        $start_date=Carbon::now()->startOfWeek()->format("Y-m-d");
+        $end_date=Carbon::now()->endOfWeek()->format("Y-m-d");
+        $allProject=Project::select("name","description","hourLimit","active","id","user_id")->where("user_id",$id)->get();
+        foreach($allProject as $key=> $project_list){
+            $check=TrackerInfo::where("user_id",$id)
+                             ->where("project_id",$project_list->id)
+                             ->whereBetween("trackingDate",[$start_date,$end_date])
+                             ->sum("trackingHours");
+                if($check>0){
+                    $allProject[$key]['trackingHours']=$check;
+                }else{
+                    $allProject[$key]['trackingHours']=0;
+                }
+        }
+
+
         return view("admin.pages.tracker.assignedProject",['data'=>$allProject]);
 
        }

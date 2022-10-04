@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
   <link rel="stylesheet" href="{{asset('vendors/css/forms/select/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/extensions/toastr.min.css')) }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 
 @section('page-style')
@@ -33,7 +35,12 @@
 <section class="app-user-list">
 
   <!-- list and filter start -->
+<div class="form-group mb-1">
+    <label for="Select Date"><b>Select Date</b></label>
+    <input class="flatpickr flatpickr-input active form-control w-25 border boder-success" type="text" placeholder="Select Date.." readonly="readonly" id="select-date" user="{{base64_encode($username['id'])}}" project="{{base64_encode($projectname['id'])}}">
+</div>
   <div class="card">
+
     <div class="card-body border-bottom">
       <h4 class="card-title p-0 m-0 mb-1">Tracker Information of <span class="text-danger"><b>{{$username['name']}}</b></span></h4>
       <h5 class="p-0 m-0">Project Name : <span class="text-danger"><b>{{ucfirst($projectname['name'])}}</b></span><h5>
@@ -48,7 +55,7 @@
             <th>Date</th>
 
             <th>Details</th>
-          
+
           </tr>
         </thead>
         <tbody>
@@ -60,7 +67,7 @@
         </tr>
 
         @endfor
-           
+
             {{-- <tr>
                 <td>{{ $key+1 }}</td>
                 <td>{{ $list->name }}</td>
@@ -80,7 +87,7 @@
                 </td>
             </tr> --}}
 
-            
+
         </tbody>
       </table>
     </div>
@@ -400,7 +407,32 @@ $(".add-new-user").submit(function(e){
     });
 
 
+    var fp = $("#select-date").flatpickr({
+        dateFormat: "d-m-Y",
+        maxDate:"today"
+
+       });
+
+
+       //select date
+       $("#select-date").change(function(){
+        var username=$(this).attr("user");
+        var project=$(this).attr("project");
+
+        window.location.href="/company/tracker/user/getTrackerInfoBySpecificDate?&_u="+username+"&p_="+project+"&d_="+btoa($(this).val());
+       });
+
+
     });
+
+    @if(session()->has("message"))
+    toastr['error']('{{ session()->get("message") }}', {
+              closeButton: true,
+               tapToDismiss: false,
+              progressBar: true,
+
+    });
+    @endif
 
 
   </script>

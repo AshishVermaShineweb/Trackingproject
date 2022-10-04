@@ -140,4 +140,11 @@ class Helpers
             }
         }
     }
+
+    public function showdata($data=null){
+        echo "<pre>";
+        print_r($data);
+        echo "</pre>";
+        die;
+    }
 }

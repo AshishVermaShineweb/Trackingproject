@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Assigned Project List')
+@section('title', "Tracker Information")
 
 @section('vendor-style')
   {{-- Page Css files --}}
@@ -12,7 +12,8 @@
   <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
   <link rel="stylesheet" href="{{asset('vendors/css/forms/select/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/extensions/toastr.min.css')) }}">
-  <link rel="stylesheet" href="{{ asset('datepicker.css') }}">
+
+
 
 
 @endsection
@@ -23,19 +24,12 @@
   <link rel="stylesheet" href="{{asset('css/base/plugins/forms/pickers/form-flat-pickr.css')}}">
 
   <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/extensions/ext-component-toastr.css')) }}">
+  <link rel="stylesheet" href="{{ asset('lightgallery.css') }}" type="text/css">
 @endsection
 <style>
     .new-user-modal .modal-dialog{
         width: 60% !important;
         background: #ccc !important;
-    }
-    tr{
-        transition: 0.5s;
-
-    }
-    tr:hover{
-        background: #f3f6f9;
-        cursor: pointer;
     }
 </style>
 
@@ -43,58 +37,79 @@
 <!-- users list start -->
 <section class="app-user-list">
 
+
   <!-- list and filter start -->
-
+    <a class="btn btn-primary mb-1" href="{{ url()->previous() }}"><i class="bi bi-arrow-left" style="font-size: 20px;"></i></a>
   <div class="card">
-    <div class="card-body border-bottom">
-      <h4 class="card-title">Assigned Project List</h4>
 
+    <div class="card-body border-bottom d-flex justify-content-between alignitems-center">
+      <div><h4 class="card-title p-0 m-0 mb-1">Tracker Information of <span class="text-danger"><b>{{ucfirst(session()->get("username"))}}</b></span></h4>
+        <h5 class="p-0 mb-1">Project Name : <span class="text-danger"><b>{{ucfirst(session()->get("projectname"))}}</b></span><h5>
 
+        <h5 class="">Date : <span class="text-danger"><b>{{ \Carbon\Carbon::parse($data[0]['trackingDate'])->format("d-m-Y") }}</b></span></h5></div>
+      <div>
+        <h4>Total Tacking Hours : <span class="text-success">{{ $data[0]['trackingHours'] }}/{{ $data[0]['hourLimit'] }} Hrs</span></h4>
+      </div>
     </div>
     <div class="card-datatable table-responsive pt-0">
-      <table class="table text-center" id="user-list-table">
-        <thead class="table-light">
-          <tr>
-            <th>Sr.No</th>
-            <th>Name</th>
+      <div class="row">
+       @if(count($data)>0 && !empty($data))
+       <div class="card">
+        <div class="card-body">
 
-            <th>Description</th>
 
-            <th>Total Tracking Hours(current week)</th>
-
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-            @foreach ($data as $key=> $list )
-
-                <tr href="{{ url('/company/tracker/user/trackerInfo') }}?project_id={{ $list->id }}& user_id={{ $list->user_id }}" class="link-tr">
-                    <td>{{ $key+1 }}</td>
-                    <td>{{ $list->name }}</td>
-                    <td>{{ $list->description }}</td>
-
-                    <td>
-
-                        <p href="" class="text-success font-weight-bold"><b>{{ $list->trackingHours }} / {{ $list->hourLimit }} Hrs</b></p>
+       <ul id="lightgallery" class="list-unstyled row">
+        @foreach ($data as $key=>$list)
+        <li class="col-xs-6 col-sm-4 col-md-4 col-sm-4 mb-2"   data-responsive="{{ $list->tracking_data[0]['image'] }} 375, {{ $list->tracking_data[0]['image'] }} 480, {{ $list->tracking_data[0]['image'] }} 800" data-src="{{ $list->tracking_data[0]['image'] }}" data-sub-html="
+            <table class='table text-center text-white'>
+                <tr>
+                    <th>Shift key</th>
+                    <th>Meta Key</th>
+                    <th>Ctrl Key</th>
+                    <th>Alt key</th>
+                    <th>Rawcode</th>
+                    <th>Keyword</th>
+                    <th>Time</th>
 
 
 
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <a class="btn btn-sm dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical font-small-4"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></a>
-                            <div class="dropdown-menu dropdown-menu-end" style=""><a href="{{ url('/company/tracker/user/trackerInfo') }}?project_id={{ $list->id }}& user_id={{ $list->user_id }}" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text font-small-4 me-50">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                Tracker Info</a>
-                                </div></div>
-
-                    </td>
                 </tr>
+                <tr>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>7:30</td>
+                </tr>
+            </table>
 
 
+            ">
+
+                        <a href="" class="w-100">
+
+                            <img class="img-responsive" src="{{ $list->tracking_data[0]['image'] }}" width="100%">
+                            </a>
+
+
+
+
+
+            </li>
             @endforeach
-        </tbody>
-      </table>
+
+       </ul>
+
+
+
+        </div>
+       </div>
+       @else
+        <center> <h1 class="text-danger">No Any Data </h1></center>
+       @endif
+      </div>
     </div>
 
   </div>
@@ -125,7 +140,6 @@
 <script src="{{asset('vendors/js/forms/select/select2.full.min.js')}}"></script>
 <script src="{{asset('vendors/js/pickers/flatpickr/flatpickr.min.js')}}"></script>
 <script src="{{ asset(mix('vendors/js/extensions/toastr.min.js')) }}"></script>
-<script src="{{ asset('datepicker.js') }}"></script>
 @endsection
 
 @section('page-script')
@@ -224,11 +238,19 @@ $(".add-new-user").submit(function(e){
     });
 
 
-    $(".link-tr").each(function(){
-        $(this).click(function(){
-            window.location.href=$(this).attr("href");
-        });
-    });
+
+
+
+       //select date
+       $("#select-date").change(function(){
+        var username=$(this).attr("user");
+        var project=$(this).attr("project");
+
+        window.location.href="/company/tracker/user/getTrackerInfoBySpecificDate?+&_u="+username+"&p_="+project+"&d_="+btoa($(this).val());
+       });
+
+
+
 
 
 
@@ -237,4 +259,31 @@ $(".add-new-user").submit(function(e){
 
   </script>
 
-  @endsection
+<script src="{{ url('jquery.js') }}"></script>
+<script src="{{ url('lightgallery-all.min.js') }}"></script>
+<script>
+    //load poppu box of tracking image
+    $('#lightgallery').lightGallery();
+    var url=window.location;
+    localStorage.setItem("url",url);
+    var $lg = $('#lightgallery');
+
+$lg.lightGallery();
+
+// Fired immediately once lightgallery is closed.
+$lg.on('onCloseAfter.lg', function (event) {
+    var url=localStorage.getItem("url");
+    window.history.replaceState("", "Tracking details",url );
+});
+
+$lg.on('onBeforeClose.lg', function (event) {
+    var url=localStorage.getItem("url");
+    window.history.replaceState("", "Tracking details",url );
+});
+
+
+
+
+
+</script>
+@endsection

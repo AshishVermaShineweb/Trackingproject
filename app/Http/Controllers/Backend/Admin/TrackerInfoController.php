@@ -11,11 +11,51 @@ use App\Models\Project;
 use Carbon\Carbon;
 use Validator;
 use DB;
+
 use Session;
 
 
 class TrackerInfoController extends Controller
 {
+    public function userList(){
+        try{
+            $start_date=Carbon::now()->startOfWeek()->format("Y-m-d");
+            $end_date=Carbon::now()->endOfWeek()->format("Y-m-d");
+            $data=User::select("id","name","status")->get();
+
+        foreach($data as $key=>$user_id){
+
+            $allproject=Project::where("user_id",$user_id->id)->get();
+            foreach($allproject as $project_list){
+                  $check=TrackerInfo::where("user_id",$user_id->id)
+                                    ->where("project_id",$project_list->id)->exists();
+
+
+                if($check){
+                    $trackingData=TrackerInfo::where("user_id",$user_id->id)
+                                              ->where("project_id",$project_list->id)
+                                              ->whereBetween("trackingDate",array($start_date,$end_date))->sum("trackingHours");
+                  if($trackingData>0){
+                    $data[$key]['trackingHour']=$trackingData;
+                  }else{
+                    $data[$key]['trackingHour']=0;
+                  }
+                }
+            }
+
+        }
+
+
+
+        return view("admin.pages.tracker.list",['data'=>$data]);
+
+        }catch(\Exception $e){
+            return redirect()->back()->with(['message'=>$e->getMessage()]);
+
+        }
+
+    }
+
     public function list(Request $request){
          $date=date("Y-m-d",$request->trackingDate);
         $data=TrackerInfo::where("trackingDate",$date)->first();
@@ -253,7 +293,7 @@ class TrackerInfoController extends Controller
                 $endOfWeek=Carbon::today()->endOfWeek()->format("Y-m-d");
                 $username=User::where("id",$request->get("user_id"))->select("name","id")->first();
                 $projectname=Project::where("id",$request->get("project_id"))->select("name","id")->first();
-                //set username and project project name is session so that we can use this at multiple place
+                //set username and project project name is session so that we can use this at multiple places
                 Session::put("username",$username['name']);
                 Session::put("projectname",$projectname['name']);
                 //end set username and project name in session
@@ -349,6 +389,44 @@ class TrackerInfoController extends Controller
     }
 
 
+
+    public function getTrackerInfoBySepcificDate(Request $request){
+        $date=base64_decode($request->get("d_"));
+        $date=Carbon::parse($date)->format("Y-m-d");
+
+        $user_id=base64_decode($request->get("_u"));
+        $project_id=base64_decode($request->get("p_"));
+        try{
+            $query=TrackerInfo::where("user_id",$user_id)
+            ->where("project_id",$project_id)
+            ->where("trackingDate",$date);
+
+        $query->join("tracker_info_data as tf",function($join) use($date){
+        $join->on("tf.tracker_id","=","tracker_infos.id");
+        $join->where("tracking_date",$date);
+});
+     $query->select("tracker_infos.trackingHours","tracker_infos.trackingDate","tracker_infos.hourLimit","tracker_infos.id as tracker_info_id","tf.tracking_data","tf.created_at");
+     $getData=$query->get();
+        if(count($getData)>0 && !empty($getData)){
+            $getData=$getData->map(function($data){
+                $tracker_data=json_decode(json_decode($data->tracking_data,true),true);
+                 $data['tracking_data']=$tracker_data;
+                 return $data;
+                });
+                return view("admin.pages.tracker.trackerListByDate",['data'=>$getData]);
+        }else{
+            return redirect()->back()->with(['message'=>"No Any Data Found"]);
+        }
+
+
+
+
+
+        }catch(\Exception $e){
+
+          return redirect()->back()->with(['message'=>$e->getMessage()]);
+        }
+    }
 
 
 }
