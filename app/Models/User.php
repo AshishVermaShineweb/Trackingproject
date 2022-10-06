@@ -63,4 +63,14 @@ class User extends Authenticatable
     public function project(){
         return $this->hasOne(Project::class);
     }
+
+    public static function check($email=null){
+        $check=self::whereEmail($email)->exists();
+        if($check){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
 }

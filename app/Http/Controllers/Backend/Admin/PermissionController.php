@@ -19,8 +19,8 @@ class PermissionController extends Controller
     }
 
     public function list(){
-        $role=Role::where("status",1)->get();
-        return view("admin.pages.setting.permission.list",['role'=>$role]);
+
+        return view("admin.pages.setting.permission.list");
     }
 
     public function listdata(Request $request){
@@ -108,15 +108,61 @@ else{
     }
 
     //update role and permission
+    // public function update(Request $request){
+    //       if($request->status==0){
+    //         $permission=$request->module_name." ".$request->column_name;
+    //         $check=Permission::where()
+    //       }
+    //     // print_r($request->all());
+    //     die;
+    //     try{
+    //         $update=Permission::where("module_name",$request->get("module_name"))->update(["{$request->get('column_name')}"=>$request->status]);
+    //         try{
+    //             if($update){
+    //                 return response()->json([
+    //                     "message"=>"success",
+    //                     "code"=>200,
+
+    //                 ],200);
+    //             }else{
+    //                 return response()->json([
+    //                     "message"=>"something went wrong",
+    //                     "code"=>400,
+    //                 ],400);
+    //             }
+    //         }
+    //         catch(\Throwable $e){
+    //             return response()->json([
+    //                 "message"=>$e->getMessage(),
+    //                 "code"=>500,
+    //             ]);
+    //         }
+
+    //     }catch(\Exception $e){
+    //         return response()->json([
+    //             "message"=>$e->getMessage(),
+    //             "code"=>500,
+    //         ],500);
+    //     }
+    // }
+
+
     public function update(Request $request){
         try{
-            $update=Permission::where("module_name",$request->get("module_name"))->update(["{$request->get('column_name')}"=>$request->status]);
-            try{
+            $validate=Validator::make($request->all(),[
+                "permission"=>"required",
+            ],["permission.required"=>"Role name can`t be empty"]);
+            if($validate->fails()){
+              return response()->json([
+                "message"=>$validate->errors(),
+                "code"=>400,
+              ],400);
+            }else{
+                $update=Permission::where("id",$request->id)->update(['name'=>$request->permission,"status"=>$request->status]);
                 if($update){
                     return response()->json([
                         "message"=>"success",
                         "code"=>200,
-
                     ],200);
                 }else{
                     return response()->json([
@@ -124,13 +170,9 @@ else{
                         "code"=>400,
                     ],400);
                 }
+
             }
-            catch(\Throwable $e){
-                return response()->json([
-                    "message"=>$e->getMessage(),
-                    "code"=>500,
-                ]);
-            }
+
 
         }catch(\Exception $e){
             return response()->json([
@@ -138,6 +180,31 @@ else{
                 "code"=>500,
             ],500);
         }
+    }
+
+    public function assign(){
+        $role=Role::where("status",1)->get();
+        $permission=Permission::where("status",1)->get();
+        return view("admin.pages.setting.permission.assign_permission",compact('role','permission'));
+    }
+
+    public function assignData(Request $request){
+        try{
+            $role=Role::find($request->role);
+            $role->syncPermissions($request->input('permission'));
+            return response()->json([
+            "message"=>"success",
+            "code"=>200,
+          ],200);
+
+        }catch(\Exception $e){
+            return response()->json([
+                "message"=>$e->getMessage(),
+                "code"=>500,
+            ],500);
+        }
+
+
     }
 
 }

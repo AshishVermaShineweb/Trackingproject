@@ -13,8 +13,7 @@
   <link rel="stylesheet" href="{{asset('vendors/css/forms/select/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/extensions/toastr.min.css')) }}">
   <link rel="stylesheet" href="{{asset('data/animate.min.css')}}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 @endsection
 
 @section('page-style')
@@ -38,7 +37,7 @@
   <!-- list and filter start -->
 
   <div class="card">
-    <input class="flatpickr flatpickr-input active form-control" type="text" placeholder="Select Date.." readonly="readonly" id="select-date">
+
     <div class="card-body border-bottom d-flex justify-content-between align-items-justify">
       <div><h4 class="card-title p-0 m-0 mb-1">Tracker Information List of <span class="text-danger"><b>{{ucfirst(Session::get("username"))}}</b></span></h4>
       <h5 class="p-0 m-0">Project Name : <span class="text-danger"><b>{{ucfirst(Session::get("projectname"))}}</b></span><h5></div>
@@ -303,11 +302,7 @@ $(".keyword-modal-close-btn").click(function(){
 
     });
 
-    var fp = $("#select-date").flatpickr({
 
-
-
-});
   });
 </script>
 

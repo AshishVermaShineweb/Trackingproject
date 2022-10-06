@@ -172,3 +172,21 @@ Route::get("/company/permission/delete",[PermissionController::class,"delete"]);
 Route::post("/company/permission/update",[PermissionController::class,"update"]);
 //------------------------------ PERMISSION ROTUNG END -----------------------------------------//
 
+
+//------------------------------ ASSIGN PERMISSION ROUTING START ---------------------------------------//
+Route::get("/company/permission/assign",[PermissionController::class,"assign"]);
+Route::post("/company/permission/assign",[PermissionController::class,"assignData"]);
+
+//------------------------------ ASSIGN PERMISSION ROTUNG END -----------------------------------------//
+
+//------------------------------USER ROTUING START ----------------------------------------------------//
+Route::prefix("/company/user/")->group(function(){
+Route::controller(UserController::class)->group(function(){
+      Route::get("list","list");
+      Route::post("create","create");
+      Route::get("getList","getList");
+      Route::get('status',"status");
+      Route::get('delete',"delete");
+});
+});
+//------------------------------ END USER ROUTING -----------------------------------------------------//

@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Config;
 use Illuminate\Support\Str;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class Helpers
 {
@@ -141,10 +142,11 @@ class Helpers
         }
     }
 
-    public function showdata($data=null){
-        echo "<pre>";
-        print_r($data);
-        echo "</pre>";
-        die;
+    public static function sendError($message,$error=[],$code=401){
+        $response=['success'=>false,"message"=>$message];
+        if(!empty($error)){
+            $response['error']=$error;
+        }
+        throw new HttpResponseException(response()->json($response,$code));
     }
 }
